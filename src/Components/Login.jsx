@@ -1,23 +1,43 @@
 import React, { useState } from "react";
-import { useLoginMutation } from "../redux/api";
+import {
+  doSignInWithEmailAndPassword,
+  doSignInWithGoogle,
+} from "../firebase/auth";
 
 export default function Login() {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
 
-  const [login] = useLoginMutation();
- 
-
-  const handleOnSubmit = async (e) => {
+  const googleLogin = async (e) => {
     e.preventDefault();
-    await login({ email, password });
-    setemail("");
-    setpassword("");
+    try {
+      let result = await doSignInWithGoogle();
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let result = await doSignInWithEmailAndPassword(email, password);
+      // console.log(result);
+      if (result && result.user) {
+        let newUser = {
+          email: result.user.email,
+          password: password,
+        };
+        console.log("my new User is ", newUser);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
     <>
-      <form className="container my-5" onSubmit={handleOnSubmit}>
+      <form className="container my-5" onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             Email address
@@ -52,9 +72,12 @@ export default function Login() {
         </div>
 
         <button type="submit" className="btn btn-primary">
-          Submit
+          Login Manually
         </button>
       </form>
+      <button onClick={googleLogin} className="btn btn-primary">
+        SignIn With Google
+      </button>
     </>
   );
 }

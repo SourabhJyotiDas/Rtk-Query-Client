@@ -1,17 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useLogoutMutation } from "../redux/api";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { app } from "../firebase/firebase";
+import { doSignInWithEmailAndPassword, doSignOut } from "../firebase/auth";
 
 export default function Navbar() {
-  const [logout] = useLogoutMutation("");
+  const auth = getAuth(app);
 
-  const HandleLogout = async () => {
-    try {
-      await logout();
-      window.location.reload();
-    } catch (error) {
-      console.log(error);
-    }
+  const loginHandler = () => {
+    const googleProvider = new GoogleAuthProvider();
+    doSignInWithEmailAndPassword();
+    signInWithPopup(auth, googleProvider);
+  };
+
+  const logOutHandler = () => {
+    doSignOut();
   };
 
   return (
@@ -46,10 +49,30 @@ export default function Navbar() {
                   Register
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/password/reset">
+                  Forgot Password
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/password/update">
+                  Update Password
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/email/verification">
+                  Email Verification
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/phone/verification">
+                  Phone Verification
+                </Link>
+              </li>
               <li className="nav-item mx-5">
                 <button
                   className="btn btn-outline-danger"
-                  onClick={HandleLogout}>
+                  onClick={logOutHandler}>
                   Logout
                 </button>
               </li>

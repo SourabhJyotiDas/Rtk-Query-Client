@@ -1,27 +1,32 @@
 import React, { useState } from "react";
-import { useRegisterMutation } from "../redux/api";
-import { useNavigate } from "react-router-dom";
+import { doCreateUserWithEmailAndPassword } from "../firebase/auth";
 
 export default function Register() {
-  const naigate = useNavigate();
   const [name, setname] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
 
-  const [register] = useRegisterMutation();
-
-  const handleOnSubmit = async (e) => {
+  const signUpUserHandle = async (e) => {
     e.preventDefault();
-    await register({ name, email, password });
-    setname("");
-    setemail("");
-    setpassword("");
-    naigate("/")
+    try {
+      let result = await doCreateUserWithEmailAndPassword(email, password);
+      console.log(result.user);
+      if (result && result.user) {
+        let newUser = {
+          name: name,
+          email: result.user.email,
+          password: password,
+        };
+        console.log("my new User is ", newUser);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
     <>
-      <form className="container my-5" onSubmit={handleOnSubmit}>
+      <form className="container my-5" onSubmit={signUpUserHandle}>
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             Name
@@ -78,7 +83,7 @@ export default function Register() {
           </label>
         </div>
         <button type="submit" className="btn btn-primary">
-          Submit
+          Create Account
         </button>
       </form>
     </>

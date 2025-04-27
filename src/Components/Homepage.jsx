@@ -1,26 +1,56 @@
 import React from "react";
-import { useGetAllNotesQuery } from "../redux/api";
-import Posts from "./Posts";
-import Addnote from "./Addnote";
+import { FireStoreDB } from "../firebase/Cloud_firestore_db";
+import {
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 export default function Homepage() {
-  
-  const { data, isLoading } = useGetAllNotesQuery();
+  const writeData = async () => {
+    const result = await addDoc(collection(FireStoreDB, "Users"), {
+      name: "Kapil Nath",
+      image: "https:img.com",
+      age: 24,
+      isAdmin: false,
+      followers: [],
+      following: [],
+      saved: [],
+      liked: [],
+      Birthday: Date.now(),
+    });
+
+    console.log("My Data is ", result);
+  };
+
+  // const getDocuments = async () => {
+  //   // const ref =  doc(FireStoreDB, "Users","7VOIgxCf5PpCAqFz1Ua8");
+  //   // const snap = await getDoc(ref);
+  //   // console.log(snap.data());
+
+  //   const collectionRef = collection(FireStoreDB, "Users");
+  //   const q = query(collectionRef, where("isAdmin", "==", true));
+  //   const snapshot = await getDocs(q);
+
+  //   snapshot.forEach((ele) => {
+  //     console.log(ele.data());
+  //   });
+  // };
 
   return (
     <>
-      <Addnote />
+      <h1>Welcome to HOMEPAGE</h1>
 
-      <div className="container my-5">
-        {isLoading ? (
-          <> Loading...</>
-        ) : (
-          data.mynotes &&
-          data.mynotes.map((ele) => {
-            return <Posts key={ele._id} data={ele} />;
-          })
-        )}
-      </div>
+      {/* <button onClick={writeData} className="btn btn-primary">
+        Add Data to FireStore
+      </button>
+      <button onClick={getDocuments} className="btn btn-primary">
+        View Data
+      </button> */}
     </>
   );
 }
